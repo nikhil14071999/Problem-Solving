@@ -1,0 +1,39 @@
+/*
+  In this problem, we have to optimize the usage of bricks and ladders in order to reach the farthest building.
+  
+  Intutively, we should try to use ladders when the height difference is large between two buildings because otherwise we will have to use a lot of bricks to make up for the height difference.
+  
+  In this solution, 
+    1. We first calculate the height difference of current and nxt building.
+    2. If it is > 0 we need to use bricks or a ladder.
+    3. Here we first try to use bricks whereever possible and also pushing the number of bricks used in a Max Heap.
+    4. If diff > bricks available, this means we need to use a ladder if possible.
+    5. Now we have use the ladder optimally, for that we use it at the position where the number of bricks used till not is max using Max Heap and replace the bricks used previously used at that place with ladder.
+    6. If we cannot use ladder or bricks any further we return the current building Index.
+
+*/
+int furthestBuilding(vector<int>& heights, int bricks, int ladders) {
+        priority_queue<int> pq;
+        int bIdx = 0, n = heights.size();
+        while(bIdx+1<n){
+            int diff = heights[bIdx+1] - heights[bIdx];
+            if(diff>0){
+                if(bricks >= diff){
+                    bricks -= diff;
+                    pq.push(diff);
+                }
+                else{
+                    if(ladders<=0)
+                        return bIdx;
+                    ladders--;    
+                    if(!pq.empty() && diff < pq.top()){
+                        bricks += (pq.top() - diff);
+                        pq.pop();
+                        pq.push(diff);
+                    }
+                }
+            }
+            bIdx++;
+        }
+        return bIdx;
+    }
